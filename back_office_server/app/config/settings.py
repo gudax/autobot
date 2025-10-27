@@ -10,7 +10,7 @@ import os
 
 class Settings(BaseSettings):
     """Application settings"""
-    model_config = ConfigDict(extra='ignore')
+    model_config = ConfigDict(extra='ignore', env_file=".env", case_sensitive=True)
 
     # Application
     APP_NAME: str = "Match-Trade Back Office Server"
@@ -70,10 +70,6 @@ class Settings(BaseSettings):
     def sync_database_url(self) -> str:
         """Get synchronous database connection URL (for Alembic)"""
         return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
 
 # Global settings instance
