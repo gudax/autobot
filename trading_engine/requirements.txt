@@ -9,7 +9,6 @@ pandas==2.1.4
 numpy==1.26.2
 
 # Technical Analysis
-ta-lib==0.4.28
 ta==0.11.0
 
 # Data Validation

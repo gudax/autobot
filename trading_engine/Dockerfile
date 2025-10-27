@@ -3,21 +3,11 @@ FROM python:3.11-slim as builder
 
 WORKDIR /app
 
-# Install system dependencies and TA-Lib
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
-    wget \
-    make \
-    && rm -rf /var/lib/apt/lists/* \
-    && wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
-    && tar -xzf ta-lib-0.4.0-src.tar.gz \
-    && cd ta-lib/ \
-    && ./configure --prefix=/usr \
-    && make \
-    && make install \
-    && cd .. \
-    && rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .
@@ -28,22 +18,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install runtime dependencies and TA-Lib
+# Install runtime dependencies
 RUN apt-get update && apt-get install -y \
     curl \
-    wget \
-    make \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/* \
-    && wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
-    && tar -xzf ta-lib-0.4.0-src.tar.gz \
-    && cd ta-lib/ \
-    && ./configure --prefix=/usr \
-    && make \
-    && make install \
-    && cd .. \
-    && rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy Python dependencies from builder
 COPY --from=builder /root/.local /root/.local
