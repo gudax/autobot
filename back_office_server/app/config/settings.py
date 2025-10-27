@@ -3,12 +3,14 @@ Configuration settings for Back Office Server
 """
 
 from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 from typing import Optional, List
 import os
 
 
 class Settings(BaseSettings):
     """Application settings"""
+    model_config = ConfigDict(extra='ignore')
 
     # Application
     APP_NAME: str = "Match-Trade Back Office Server"
