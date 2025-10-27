@@ -3,7 +3,7 @@ Configuration settings for Back Office Server
 """
 
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, List
 import os
 
 
@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     SESSION_MAX_RETRY_ATTEMPTS: int = 3
 
     # CORS
-    CORS_ORIGINS: list = [
+    CORS_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://localhost:8000",
     ]
