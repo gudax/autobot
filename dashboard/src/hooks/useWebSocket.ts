@@ -25,7 +25,7 @@ export const useWebSocket = (channel: string = 'all', options: UseWebSocketOptio
   const [error, setError] = useState<Event | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+  const reconnectTimeoutRef = useRef<number>();
 
   const connect = useCallback(() => {
     try {

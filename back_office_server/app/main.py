@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import logging
+import asyncio
 
 from app.config.settings import settings
 from app.config.database import init_db, close_db
@@ -25,7 +26,7 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Back Office Server...")
 
     try:
-        # Initialize database
+        # Initialize database with retry
         await init_db()
         logger.info("Database initialized successfully")
 

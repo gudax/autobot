@@ -12,8 +12,15 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        case_sensitive=False
+        case_sensitive=False,
+        extra="ignore"  # Ignore extra fields from environment
     )
+
+    # Application Configuration
+    app_env: str = "development"
+    
+    # Back Office API Configuration
+    back_office_api_url: str = "http://localhost:8000"
 
     # Match-Trade API Configuration
     api_base_url: str = "https://mtr-demo-prod.match-trader.com"

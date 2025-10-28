@@ -18,7 +18,7 @@ class SystemLog(Base):
     log_level = Column(String(20), nullable=True, index=True)  # DEBUG/INFO/WARNING/ERROR/CRITICAL
     component = Column(String(100), nullable=True, index=True)
     message = Column(Text, nullable=True)
-    metadata = Column(JSONB, nullable=True)
+    extra_data = Column(JSONB, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
 
     def __repr__(self):
@@ -31,6 +31,6 @@ class SystemLog(Base):
             "log_level": self.log_level,
             "component": self.component,
             "message": self.message,
-            "metadata": self.metadata,
+            "extra_data": self.extra_data,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

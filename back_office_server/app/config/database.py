@@ -6,14 +6,31 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import NullPool
 from app.config.settings import settings
+import asyncio
+import logging
 
+logger = logging.getLogger(__name__)
 
-# Create async engine
+# Clean the DATABASE_URL - remove any ssl parameters from URL
+# We will pass ssl=False via connect_args instead
+database_url = settings.database_url
+if "?ssl=" in database_url:
+    database_url = database_url.split("?")[0]
+if "&ssl=" in database_url:
+    database_url = database_url.split("&ssl=")[0]
+
+# Create async engine with SSL disabled for asyncpg
 engine = create_async_engine(
-    settings.database_url,
+    database_url,
     echo=settings.DEBUG,
     poolclass=NullPool,
-    future=True
+    future=True,
+    connect_args={
+        "ssl": False,  # Disable SSL for asyncpg
+        "timeout": 60,
+        "command_timeout": 60,
+        "server_settings": {"jit": "off"}
+    }
 )
 
 # Create async session factory
@@ -50,9 +67,25 @@ async def get_db() -> AsyncSession:
 
 
 async def init_db():
-    """Initialize database - create all tables"""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    """Initialize database - create all tables with retry logic"""
+    max_retries = 10
+    retry_delay = 3
+    
+    for attempt in range(max_retries):
+        try:
+            logger.info(f"Attempting to connect to database (attempt {attempt + 1}/{max_retries})...")
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            logger.info("Database initialized successfully")
+            return
+        except Exception as e:
+            if attempt < max_retries - 1:
+                logger.warning(f"Database connection failed (attempt {attempt + 1}/{max_retries}): {e}")
+                logger.info(f"Retrying in {retry_delay} seconds...")
+                await asyncio.sleep(retry_delay)
+            else:
+                logger.error(f"Failed to initialize database after {max_retries} attempts: {e}")
+                raise
 
 
 async def close_db():

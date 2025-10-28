@@ -10,7 +10,7 @@ export const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loginAllLoading, setLoginAllLoading] = useState(false);
 
-  const { isConnected, lastMessage } = useWebSocket('dashboard', {
+  const { isConnected } = useWebSocket('dashboard', {
     onMessage: (message) => {
       if (message.type === 'dashboard_update') {
         setOverview(message.data);

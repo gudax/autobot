@@ -22,7 +22,8 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8000
 
-    # Database
+    # Database - can use either DATABASE_URL or individual components
+    DATABASE_URL: Optional[str] = None
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
     DB_NAME: str = "trading_system"
@@ -63,12 +64,17 @@ class Settings(BaseSettings):
 
     @property
     def database_url(self) -> str:
-        """Get database connection URL"""
+        """Get database connection URL - use DATABASE_URL if provided, otherwise construct from parts"""
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     @property
     def sync_database_url(self) -> str:
         """Get synchronous database connection URL (for Alembic)"""
+        if self.DATABASE_URL:
+            # Convert async URL to sync
+            return self.DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
         return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
 

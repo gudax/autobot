@@ -51,9 +51,6 @@ services:
     restart: unless-stopped
     env_file:
       - ./back_office_server/.env
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-autobot_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-autobot_trading}
-      - REDIS_URL=redis://redis:6379
     volumes:
       - ./back_office_server/app:/app/app:ro
       - ./logs:/var/log/autobot
@@ -90,7 +87,7 @@ services:
     environment:
       - BACK_OFFICE_API_URL=http://back_office_server:8000
     volumes:
-      - ./trading_engine:/app:ro
+      - ./trading_engine:/app
       - ./logs:/var/log/autobot
       - ./trading_engine/data:/app/data
     networks:
@@ -155,7 +152,6 @@ services:
     restart: unless-stopped
     profiles:
       - monitoring
-    environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false

@@ -9,7 +9,7 @@ import json
 from typing import Dict, List, Set
 from datetime import datetime
 import logging
-from fastapi import WebSocket, WebSocketState
+from fastapi import WebSocket
 
 logger = logging.getLogger(__name__)
 
@@ -154,19 +154,11 @@ class ConnectionManager:
         for connection in connections:
             try:
                 # Check WebSocket state before attempting send
-                from fastapi import WebSocketState
 
-                if not hasattr(connection, 'client_state'):
-                    # Connection doesn't have state tracking, try to send anyway
-                    valid_connections.append(connection)
-                    send_tasks.append(self._send_with_timeout(connection, message))
-                elif connection.client_state == WebSocketState.CONNECTED:
-                    valid_connections.append(connection)
-                    send_tasks.append(self._send_with_timeout(connection, message))
-                else:
-                    # Connection not in CONNECTED state
-                    disconnected.append(connection)
-                    logger.debug(f"Skipping disconnected WebSocket (state: {connection.client_state})")
+
+                # Try to send to all connections, handle disconnected ones via exception
+                valid_connections.append(connection)
+                send_tasks.append(self._send_with_timeout(connection, message))
 
             except Exception as e:
                 logger.error(f"Error checking connection state: {e}")
